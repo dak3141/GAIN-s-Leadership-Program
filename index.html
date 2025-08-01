@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAIN Leadership Compass</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 21, 41, 0.8), rgba(0, 21, 41, 0.6)), url('https://placehold.co/1600x900/001529/001529');
+            background-size: cover;
+            background-position: center;
+        }
+        .gain-takeaway {
+            background-color: #FFFBEB; /* Light yellow */
+            border-left: 4px solid #FBBF24; /* Amber */
+        }
+        [x-cloak] { display: none !important; }
+        .blueprint-preview h4 {
+            font-weight: 600;
+            color: #1e3a8a; /* dark blue */
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800" x-data="leadershipCompass()">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-900">
+                <span class="text-blue-600">GAIN</span> Leadership Compass
+            </div>
+            <div class="hidden md:flex space-x-6 items-center">
+                <a href="#compare" class="text-gray-600 hover:text-blue-600 transition">Compare</a>
+                <a href="#models" class="text-gray-600 hover:text-blue-600 transition">Analyze</a>
+                <a href="#blueprint" class="text-gray-600 hover:text-blue-600 transition">Blueprint</a>
+                <a href="#compare" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition shadow">Get Started</a>
+            </div>
+            <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" x-cloak class="md:hidden bg-white border-t">
+             <a href="#compare" @click="mobileMenuOpen = false" class="block py-2 px-4 text-sm hover:bg-gray-100">Compare Programs</a>
+             <a href="#models" @click="mobileMenuOpen = false" class="block py-2 px-4 text-sm hover:bg-gray-100">Analyze Models</a>
+             <a href="#blueprint" @click="mobileMenuOpen = false" class="block py-2 px-4 text-sm hover:bg-gray-100">Blueprint Your Academy</a>
+        </div>
+    </header>
+
+    <!-- Enhanced Banner -->
+    <div class="bg-blue-50 border-b border-blue-200">
+        <div class="container mx-auto px-6 py-3 text-center md:flex justify-center items-center space-y-2 md:space-y-0 md:space-x-8">
+            <p class="text-sm text-blue-800"><strong x-text="programs.length"></strong> world-class programs benchmarked.</p>
+            <div class="hidden md:block w-px h-5 bg-blue-300"></div>
+            <div class="flex justify-center space-x-4">
+                 <a href="#models" class="text-sm font-medium text-blue-700 hover:text-blue-900">See Top 3 Models</a>
+                 <a href="#blueprint" class="text-sm font-medium text-blue-700 hover:text-blue-900">Jump to Blueprint Tool &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-white py-20 md:py-32">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 leading-tight">The Future of Leadership Starts Here.</h1>
+            <p class="text-lg md:text-xl mb-8 max-w-3xl mx-auto text-gray-200">Explore the world's most transformative leadership academies to forge your own path for GAIN.</p>
+            <a href="#compare" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 text-lg shadow-lg">Compare Programs</a>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-6 py-16">
+
+        <!-- Comparison Tool Section -->
+        <section id="compare" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Leadership Program Comparator</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Select up to 3 programs to compare side-by-side. Discover the nuances that make each one unique.</p>
+
+            <!-- Program Selector -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-12">
+                <template x-for="program in programs" :key="program.id">
+                    <button @click="toggleSelection(program.id)" 
+                            :class="{
+                                'bg-blue-600 text-white ring-2 ring-blue-700 shadow-lg': isSelected(program.id),
+                                'bg-white text-gray-700 hover:bg-gray-100 shadow': !isSelected(program.id)
+                            }"
+                            class="p-4 rounded-lg transition-all duration-200 text-center cursor-pointer flex flex-col items-center justify-center h-24">
+                        <span class="font-semibold text-sm" x-text="program.shortName"></span>
+                    </button>
+                </template>
+            </div>
+            
+            <!-- Message for selection -->
+            <div x-show="selectedPrograms.length === 0" class="text-center py-12 bg-white rounded-lg shadow">
+                <p class="text-lg text-gray-600">Please select at least one program to view details.</p>
+            </div>
+            <div x-show="selectedPrograms.length > 3" class="text-center py-4 bg-red-100 border border-red-300 text-red-700 rounded-lg">
+                <p>Please select a maximum of 3 programs for the best comparison view.</p>
+            </div>
+
+            <!-- Comparison Table -->
+            <div x-show="selectedPrograms.length > 0 && selectedPrograms.length <= 3" x-cloak class="grid gap-8" :class="`md:grid-cols-${selectedPrograms.length}`">
+                <template x-for="program in getSelectedProgramDetails()" :key="program.id">
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-2" x-text="program.name"></h3>
+                            <p class="text-sm text-gray-500 mb-4" x-text="program.focus"></p>
+                        </div>
+                        <div class="px-6 pb-6 space-y-6 flex-grow">
+                            <template x-for="criterion in criteria" :key="criterion.key">
+                                <div>
+                                    <h4 class="font-semibold text-gray-700 mb-2" x-text="criterion.label"></h4>
+                                    <div class="text-gray-600 text-sm" x-html="program.details[criterion.key]"></div>
+                                    <div @click="toggleTakeaway(program.id, criterion.key)" class="mt-3 flex items-center text-blue-600 cursor-pointer text-sm font-medium hover:text-blue-800">
+                                        <span>GAIN's Takeaway</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1 transition-transform" :class="{'rotate-180': isTakeawayVisible(program.id, criterion.key)}" viewBox="0 0 20 20" fill="currentColor">
+                                          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div x-show="isTakeawayVisible(program.id, criterion.key)" x-cloak class="mt-2 p-3 gain-takeaway rounded-md text-sm text-gray-700" x-html="criterion.takeaways[program.model]">
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- Model Analysis Section -->
+        <section id="models" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Analyzing the Program Models</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Each leadership academy fits into a broader model. Understanding their pros and cons is key to designing GAIN's unique strategy.</p>
+            
+            <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Model Cards... (omitted for brevity, no changes from previous version) -->
+                 <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold mb-4">The Social Impact Fellowship</h3>
+                    <p class="text-gray-600 mb-6">e.g., Obama Foundation, Acumen, McCain</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-green-600">Pros</h4>
+                            <ul class="list-disc list-inside text-gray-600 text-sm mt-2">
+                                <li>High prestige & brand value</li>
+                                <li>Builds deep, loyal networks</li>
+                                <li>Values-driven curriculum is highly motivating</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-red-600">Cons</h4>
+                            <ul class="list-disc list-inside text-gray-600 text-sm mt-2">
+                                <li>Requires significant, continuous fundraising</li>
+                                <li>Limited scale due to small cohort sizes</li>
+                                <li>Intensive to manage and operate</li>
+                            </ul>
+                        </div>
+                        <div class="pt-4">
+                            <h4 class="font-semibold text-blue-600">Key Takeaway for GAIN</h4>
+                            <p class="text-gray-600 text-sm mt-2">Anchor GAIN's identity in a clear, powerful mission. Use a cohort model to build a strong local network and foster lasting bonds.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold mb-4">The University Executive Program</h3>
+                    <p class="text-gray-600 mb-6">e.g., Harvard Business School (GMP)</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-green-600">Pros</h4>
+                            <ul class="list-disc list-inside text-gray-600 text-sm mt-2">
+                                <li>Financially sustainable via tuition</li>
+                                <li>Clear value prop: skills & career advancement</li>
+                                <li>Proven, rigorous pedagogy (e.g., case method)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-red-600">Cons</h4>
+                            <ul class="list-disc list-inside text-gray-600 text-sm mt-2">
+                                <li>High cost is a major barrier to access</li>
+                                <li>Can be less focused on personal values</li>
+                                <li>Network can be more transactional</li>
+                            </ul>
+                        </div>
+                        <div class="pt-4">
+                            <h4 class="font-semibold text-blue-600">Key Takeaway for GAIN</h4>
+                            <p class="text-gray-600 text-sm mt-2">Develop a sustainable financial model. Consider tiered tuition or corporate sponsorships to fund scholarships and ensure accessibility.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold mb-4">The Global Influencer Network</h3>
+                    <p class="text-gray-600 mb-6">e.g., World Economic Forum (YGL)</p>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-semibold text-green-600">Pros</h4>
+                            <ul class="list-disc list-inside text-gray-600 text-sm mt-2">
+                                <li>Unparalleled access and networking</li>
+                                <li>Prestige by association is a major draw</li>
+                                <li>Action-oriented, focused on global impact</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-red-600">Cons</h4>
+                            <ul class="list-disc list-inside text-gray-600 text-sm mt-2">
+                                <li>Highly exclusive and often opaque selection</li>
+                                <li>Value is in the network, not a formal curriculum</li>
+                                <li>Selects existing leaders, rather than building new ones</li>
+                            </ul>
+                        </div>
+                        <div class="pt-4">
+                            <h4 class="font-semibold text-blue-600">Key Takeaway for GAIN</h4>
+                            <p class="text-gray-600 text-sm mt-2">Make the alumni network a core, actively managed product. Post-program opportunities are critical for long-term value and impact.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sophisticated Blueprint Section -->
+        <section id="blueprint" class="scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Blueprint Your Academy</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Use this interactive tool to prototype GAIN's leadership program. See how different choices shape the academy's identity and impact.</p>
+            
+            <div class="bg-white rounded-xl shadow-lg p-8 md:p-12 grid lg:grid-cols-2 gap-12">
+                <!-- Controls -->
+                <div class="space-y-6">
+                    <div>
+                        <label for="program-focus" class="font-semibold text-lg">Primary Program Focus</label>
+                        <p class="text-sm text-gray-500 mb-2">What is the core purpose?</p>
+                        <select id="program-focus" x-model="blueprint.focus" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="Personal Leadership & Values">Personal Leadership & Values</option>
+                            <option value="Hard Skills & Management">Hard Skills & Management</option>
+                            <option value="Network & Influence Building">Network & Influence Building</option>
+                            <option value="Social Impact & Systems Change">Social Impact & Systems Change</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="target-audience" class="font-semibold text-lg">Target Audience</label>
+                        <p class="text-sm text-gray-500 mb-2">Who are we building this for?</p>
+                        <select id="target-audience" x-model="blueprint.target" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="Emerging Leaders (25-35)">Emerging Leaders (25-35)</option>
+                            <option value="Mid-Career Professionals (35-45)">Mid-Career Professionals (35-45)</option>
+                            <option value="Senior Executives (45+)">Senior Executives (45+)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="funding-model" class="font-semibold text-lg">Funding Model</label>
+                        <p class="text-sm text-gray-500 mb-2">How will we sustain the program?</p>
+                        <select id="funding-model" x-model="blueprint.funding" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="Fully Funded (Fellowship)">Fully Funded (Fellowship)</option>
+                            <option value="Tiered Tuition">Tiered Tuition</option>
+                            <option value="Corporate Sponsored">Corporate Sponsored</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="learning-format" class="font-semibold text-lg">Learning Format</label>
+                        <p class="text-sm text-gray-500 mb-2">Where will the learning happen?</p>
+                         <select id="learning-format" x-model="blueprint.format" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="Fully In-Person">Fully In-Person</option>
+                            <option value="Hybrid (In-Person + Virtual)">Hybrid (In-Person + Virtual)</option>
+                            <option value="Fully Virtual">Fully Virtual</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-semibold text-lg">Core Pedagogy</label>
+                        <p class="text-sm text-gray-500 mb-2">How will they learn?</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="checkbox" x-model="blueprint.pedagogy" value="Case Studies" class="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"> Case Studies</label>
+                            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="checkbox" x-model="blueprint.pedagogy" value="Peer Coaching" class="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"> Peer Coaching</label>
+                            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="checkbox" x-model="blueprint.pedagogy" value="Experiential Projects" class="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"> Experiential Projects</label>
+                            <label class="flex items-center p-2 rounded-md hover:bg-gray-100"><input type="checkbox" x-model="blueprint.pedagogy" value="High-Level Mentoring" class="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"> High-Level Mentoring</label>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="capstone-project" class="font-semibold text-lg">Capstone Project</label>
+                        <p class="text-sm text-gray-500 mb-2">How will they apply their learning?</p>
+                         <select id="capstone-project" x-model="blueprint.capstone" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="Individual Leadership Project">Individual Leadership Project</option>
+                            <option value="Group-based Social Venture">Group-based Social Venture</option>
+                            <option value="Policy Paper / Case Study">Policy Paper / Case Study</option>
+                            <option value="No Formal Capstone">No Formal Capstone</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label for="cohort-size" class="font-semibold text-lg">Ideal Cohort Size</label>
+                        <p class="text-sm text-gray-500 mb-2">How large will the group be?</p>
+                        <input type="range" id="cohort-size" x-model="blueprint.cohortSize" min="15" max="100" step="5" class="w-full">
+                        <div class="text-center font-medium" x-text="blueprint.cohortSize + ' participants'"></div>
+                    </div>
+                </div>
+                <!-- Generated Preview -->
+                <div class="bg-blue-50 border-2 border-blue-200 border-dashed rounded-lg p-6 lg:p-8">
+                    <h3 class="text-2xl font-bold mb-4 text-blue-800">GAIN Academy Preview</h3>
+                    <div class="space-y-5 text-gray-700 text-sm blueprint-preview" x-html="generateBlueprintPreview()">
+                        <!-- Dynamic content will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-24">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 GAIN Leadership Compass. All Rights Reserved.</p>
+            <p class="text-sm text-gray-400 mt-2">A strategic tool for building the future of leadership in Armenia.</p>
+        </div>
+    </footer>
+
+    <script>
+        function leadershipCompass() {
+            return {
+                mobileMenuOpen: false,
+                programs: [
+                    // Data for all leadership programs (omitted for brevity, no changes)
+                    { id: 1, shortName: 'Obama', name: 'Obama Foundation Leaders', model: 'fellowship', focus: 'Community & Civic Engagement', details: { target: 'Emerging leaders (25-45) in community, civic, or public service.', selection: 'Open application. Focus on demonstrated impact, commitment to values, and a clear vision.', cost: 'Fully Funded Fellowship. All costs covered.', pedagogy: 'Peer-coaching, values-based storytelling, skill-building workshops, and convenings.', duration: '12 months; ~8–12 hrs/month online; regional in-person convenings.', curriculum: 'Values-based leadership, identity & narrative, power & systems, civic responsibility.', post_program: 'Global network; funding for collaboration projects; access to Obama events.' }},
+                    { id: 2, shortName: 'McCain', name: 'McCain Global Leaders', model: 'fellowship', focus: 'Character-Driven Leadership', details: { target: 'Mid-career professionals (30-45) from any sector with a track record of character-driven leadership.', selection: 'Nomination-based. Criteria include character, commitment to public service, and global potential.', cost: 'Fully Funded Fellowship. Paid for by the McCain Institute.', pedagogy: 'Experiential learning in global "hotspots," leadership case studies, and high-level mentoring.', duration: '10 months; ~25 in-person days (3 convenings); ~6–8 hrs/month virtual work.', curriculum: 'Character-driven leadership, conflict & democracy, global cooperation, ethics in service.', post_program: 'McCain Institute alumni network; speaking opportunities; Sedona Forum; mentoring.' }},
+                    { id: 3, shortName: 'Acumen', name: 'Acumen Fellows', model: 'fellowship', focus: 'Moral Leadership for Social Change', details: { target: 'Social entrepreneurs, innovators, and intrapreneurs committed to tackling poverty.', selection: 'Open application. Rigorous multi-stage process focused on moral character and commitment.', cost: 'Fully Funded Fellowship. Fellows are expected to commit their time fully.', pedagogy: '"Moral Imagination" practice, systems thinking, adaptive leadership labs, and peer coaching.', duration: '6–12 months hybrid; 2 retreats; virtual labs + 1:1 peer coaching.', curriculum: 'Moral leadership, adaptive change, voice & agency, polarity management, inclusive design.', post_program: 'Acumen Foundry; project incubation; seed grants; lifelong coaching options.' }},
+                    { id: 4, shortName: 'Atlantic', name: 'Atlantic Fellows (Health Equity)', model: 'fellowship', focus: 'Health Equity & Social Justice', details: { target: 'Mid-career leaders in health-related fields from diverse sectors.', selection: 'Open application. Focus on commitment to health equity and leadership potential.', cost: 'Fully Funded Fellowship. Includes a stipend to support fellows\' work.', pedagogy: 'Case studies on health equity, systems thinking, and collaborative projects.', duration: '12 months; 3 in-person weeks; bi-weekly 2hr calls; ~12–16 hrs/month.', curriculum: 'Structural inequality, community change, participatory leadership, trauma & resilience.', post_program: 'Atlantic network access (~800+ global leaders); alumni grants; team learning.' }},
+                    { id: 5, shortName: 'Bronfman', name: 'Bronfman Fellowship', model: 'fellowship', focus: 'Jewish Identity & Pluralism', details: { target: 'North American Jewish high school students of exceptional promise.', selection: 'Open application with essays and interviews. Seeks intellectual curiosity and community involvement.', cost: 'Fully Funded Fellowship. All costs, including travel to Israel, are covered.', pedagogy: 'Text-based study (Judaic texts), pluralistic dialogue, reflective writing, and immersive travel.', duration: '12 months; 5-week Israel summer residency; U.S. seminar + virtual sessions.', curriculum: 'Identity & community, ethical pluralism, Jewish values, arts & reflection, personal narrative.', post_program: 'Global alumni network (~1,400); professional mentoring; fellow-led programs.' }},
+                    { id: 6, shortName: 'WEF YGL', name: 'WEF Young Global Leaders', model: 'network', focus: 'Global Public-Private Cooperation', details: { target: 'Highly accomplished leaders under 40 from business, government, arts, and non-profits.', selection: 'Strict nomination & vetting process. Based on outstanding professional achievement and commitment to society.', cost: 'Membership-based. Participants or their organizations cover travel.', pedagogy: 'Peer networking, collaborative "task forces" on global issues, high-level dialogues, and learning journeys.', duration: '5-year term. Involves an annual summit, regional events, and project collaboration.', curriculum: 'Global challenges (e.g., climate, economy, tech), public-private cooperation, responsible leadership.', post_program: 'Lifelong membership in the YGL and WEF community, board positions, speaking roles at Davos.' }},
+                    { id: 7, shortName: 'HBS GMP', name: 'Harvard Business School (GMP)', model: 'university', focus: 'Executive General Management', details: { target: 'Senior executives (10-15+ yrs experience) transitioning into general management or senior leadership.', selection: 'Open application. Assesses professional achievement, leadership potential, and suitability for an intensive program.', cost: 'Tuition-Based. Significant cost (~$85,000) typically paid by the participant\'s sponsoring company.', pedagogy: 'Case Study Method, simulations, living groups, and faculty-led lectures from cutting-edge research.', duration: 'Blended format: 4 residential modules over several months, combined with virtual learning.', curriculum: 'Business strategy, financial management, marketing, operations, negotiation, and leading organizational change.', post_program: 'Global HBS alumni network, lifelong learning resources, and exclusive alumni events.' }},
+                ],
+                criteria: [
+                    // Criteria data (omitted for brevity, no changes)
+                    { key: 'target', label: 'Target Group', takeaways: { fellowship: 'This model excels at building tight-knit, mission-aligned cohorts. <strong>Question for GAIN:</strong> Should we focus on a narrow demographic (e.g., tech entrepreneurs) or a cross-sectoral group to foster diverse thinking?', university: 'Focuses on a specific career transition point. <strong>Question for GAIN:</strong> What is the most critical leadership gap in Armenia we can serve? Is it senior leadership, or emerging talent?', network: 'This model "creams" the top. <strong>Question for GAIN:</strong> Do we want to identify existing leaders or build new ones from the ground up?' }},
+                    { key: 'selection', label: 'Selection Process & Criteria', takeaways: { fellowship: 'Values-based selection builds a strong culture. <strong>Question for GAIN:</strong> What are the core values (e.g., integrity, resilience, civic duty) that a GAIN leader must embody?', university: 'Selection is based on professional achievement and potential. <strong>Question for GAIN:</strong> How do we balance past accomplishments with future potential in our selection?', network: 'Selection is the key benefit. <strong>Question for GAIN:</strong> Should our process be an open application to find hidden gems, or nomination-based to leverage community trust?' }},
+                    { key: 'cost', label: 'Cost & Funding Model', takeaways: { fellowship: 'Funding equals access, but requires heavy fundraising. <strong>Question for GAIN:</strong> Can we secure foundational grants or diaspora support to make this model viable?', university: 'Tuition ensures sustainability. <strong>Question for GAIN:</strong> Could a tiered tuition model (corporate rate, non-profit rate) balance budget needs with accessibility?', network: 'The members or their sponsors pay. <strong>Question for GAIN:</strong> Is there an appetite among Armenian companies to sponsor their rising stars for a premium leadership program?' }},
+                    { key: 'pedagogy', label: 'Pedagogy / Learning Approach', takeaways: { fellowship: 'Experiential and peer-based learning builds deep bonds. <strong>Question for GAIN:</strong> How can we create uniquely Armenian experiential learning? (e.g., projects with local government or industry).', university: 'The case method is world-renowned for decision-making. <strong>Question for GAIN:</strong> Can we develop our own local case studies on Armenian business and social challenges?', network: 'The "network is the curriculum." <strong>Question for GAIN:</strong> How much of our program should be structured learning vs. facilitated, high-level networking?' }},
+                    { key: 'duration', label: 'Duration & Structure', takeaways: { fellowship: 'Long-term, low-intensity models fit into busy lives. <strong>Question for GAIN:</strong> What format best respects the time of Armenian professionals while delivering transformative results?', university: 'Intensive, residential modules create a focused environment. <strong>Question for GAIN:</strong> Would a series of immersive weeks be more impactful than a year-long, distributed program?', network: 'A multi-year term focuses on long-term engagement. <strong>Question for GAIN:</strong> What does our long-term relationship with alumni look like beyond the initial program?' }},
+                    { key: 'curriculum', label: 'Curriculum Themes', takeaways: { fellowship: 'Focuses on "who" the leader is (values, purpose). <strong>Question for GAIN:</strong> What are the core themes that are most relevant to Armenia\'s future? (e.g., post-conflict leadership, tech ethics, national branding).', university: 'Focuses on "what" the leader does (skills, strategy). <strong>Question for GAIN:</strong> What are the hard skills (e.g., finance, negotiation) that Armenian leaders need most right now?', network: 'Curriculum is driven by current global events. <strong>Question for GAIN:</strong> How can our curriculum be both timeless in its principles and timely in its topics?' }},
+                    { key: 'post_program', label: 'Post-Program Opportunities', takeaways: { fellowship: 'Focuses on collaborative projects and community. <strong>Question for GAIN:</strong> Can we offer seed funding for alumni projects that serve the community?', university: 'Offers a massive, established alumni network for career benefits. <strong>Question for GAIN:</strong> How do we build our alumni network from scratch into a powerful, supportive community?', network: 'Offers a platform for continued global influence. <strong>Question for GAIN:</strong> What platform can we give our alumni to amplify their voices and impact?' }},
+                ],
+                selectedPrograms: [1, 6, 7], // Default selection
+                visibleTakeaways: {}, // e.g. { '1_target': true }
+                
+                // Enhanced Blueprint data
+                blueprint: {
+                    focus: 'Social Impact & Systems Change',
+                    target: 'Mid-Career Professionals (35-45)',
+                    funding: 'Tiered Tuition',
+                    format: 'Hybrid (In-Person + Virtual)',
+                    pedagogy: ['Case Studies', 'Experiential Projects', 'Peer Coaching'],
+                    capstone: 'Group-based Social Venture',
+                    cohortSize: 30
+                },
+
+                // Methods
+                toggleSelection(id) {
+                    const index = this.selectedPrograms.indexOf(id);
+                    if (index > -1) {
+                        this.selectedPrograms.splice(index, 1);
+                    } else {
+                        this.selectedPrograms.push(id);
+                    }
+                },
+                isSelected(id) {
+                    return this.selectedPrograms.includes(id);
+                },
+                getSelectedProgramDetails() {
+                    return this.programs.filter(p => this.selectedPrograms.includes(p.id));
+                },
+                toggleTakeaway(programId, criterionKey) {
+                    const key = `${programId}_${criterionKey}`;
+                    this.visibleTakeaways[key] = !this.visibleTakeaways[key];
+                },
+                isTakeawayVisible(programId, criterionKey) {
+                    const key = `${programId}_${criterionKey}`;
+                    return !!this.visibleTakeaways[key];
+                },
+                generateBlueprintPreview() {
+                    let preview = '';
+
+                    // Mission Statement
+                    const focusText = {
+                        'Personal Leadership & Values': 'to cultivate self-aware, values-driven leaders',
+                        'Hard Skills & Management': 'to equip leaders with advanced management and strategic skills',
+                        'Network & Influence Building': 'to build a powerful, collaborative network of influential leaders',
+                        'Social Impact & Systems Change': 'to empower leaders to tackle complex social challenges and drive systemic change'
+                    };
+                    preview += `<h4>Mission Statement</h4><p>To identify and develop Armenia's most promising <strong>${this.blueprint.target.toLowerCase()}</strong>, ${focusText[this.blueprint.focus]} who can guide the nation towards a prosperous future.</p>`;
+                    
+                    // Ideal Candidate
+                    preview += `<h4 class="mt-4">The Ideal Candidate</h4><p>We are seeking <strong>${this.blueprint.target.toLowerCase()}</strong> with a demonstrated track record of impact and a deep commitment to Armenia. They are ambitious, collaborative, and eager to apply new frameworks to their work.</p>`;
+
+                    // The Learning Journey
+                    const pedagogyText = this.blueprint.pedagogy.length > 0 ? `a blend of ${this.blueprint.pedagogy.join(', ').toLowerCase()}` : 'a unique learning model';
+                    const capstoneText = this.blueprint.capstone !== 'No Formal Capstone' ? ` The program culminates in a <strong>${this.blueprint.capstone.toLowerCase()}</strong>, allowing participants to apply their learnings to a real-world challenge.` : '';
+
+                    preview += `<h4 class="mt-4">The Learning Journey</h4><p>This is a <strong>${this.blueprint.cohortSize}-person</strong> cohort program delivered in a <strong>${this.blueprint.format.toLowerCase()}</strong> format. The curriculum uses ${pedagogyText}.${capstoneText}</p>`;
+
+                    // Strategic Considerations
+                    const fundingIdentity = {
+                        'Fully Funded (Fellowship)': '<strong>Strength:</strong> High prestige and ability to attract top, mission-driven talent regardless of financial status.<br><strong>Challenge:</strong> Requires significant, sustained fundraising and has limited scalability.',
+                        'Tiered Tuition': '<strong>Strength:</strong> A balanced model that promotes both financial sustainability and accessibility.<br><strong>Challenge:</strong> Requires careful market positioning to justify different price points.',
+                        'Corporate Sponsored': '<strong>Strength:</strong> Strong financial sustainability and clear ROI for partner companies.<br><strong>Challenge:</strong> May limit access for leaders in non-corporate sectors and could skew curriculum towards business topics.'
+                    };
+                    preview += `<h4 class="mt-4">Strategic Considerations</h4><p>The <strong>${this.blueprint.funding.toLowerCase()}</strong> model presents a distinct identity. ${fundingIdentity[this.blueprint.funding]}</p>`;
+
+                    return preview;
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
